@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'Application'
-        DOCKER_TAG = 'V1'
+       DOCKER_IMAGE = 'ishwarya2001/application'
+
     }
 
     stages {
