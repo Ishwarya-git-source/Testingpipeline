@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-       DOCKER_IMAGE = 'ishwarya2001/application'
-
+        DOCKER_IMAGE = 'ishwarya2001/application'
+        DOCKER_TAG = 'application:v1'
     }
 
     stages {
@@ -23,16 +23,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo '🐳 Building Docker image...'
-                bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                bat 'docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 echo '📦 Pushing Docker image...'
-                withCredential([usernamePassword(credentialId: 'docker-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                    bat "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    bat 'docker push %DOCKER_IMAGE%:%DOCKER_TAG%'
                 }
             }
         }
