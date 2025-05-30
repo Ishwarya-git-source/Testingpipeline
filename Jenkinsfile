@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'ishwarya2001/application'
-        DOCKER_TAG = 'application:v1'
+        DOCKER_TAG = 'v1'
+        FULL_IMAGE = 'ishwarya2001/application:v1'
     }
 
     stages {
@@ -23,7 +24,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo '🐳 Building Docker image...'
-                bat 'docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .'
+                bat 'docker build -t %FULL_IMAGE% .'
             }
         }
 
@@ -32,7 +33,7 @@ pipeline {
                 echo '📦 Pushing Docker image...'
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                    bat 'docker push %DOCKER_IMAGE%:%DOCKER_TAG%'
+                    bat 'docker push %FULL_IMAGE%'
                 }
             }
         }
