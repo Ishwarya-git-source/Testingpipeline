@@ -31,7 +31,7 @@ phases:
   post_build:
     commands:
       - echo Pushing image to ECR...
-      - docker push $IMAGE_URI
+      - docker push -t $IMAGE_URI
       - echo Image successfully pushed.
 
 artifacts:
