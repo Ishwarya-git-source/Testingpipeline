@@ -4,17 +4,13 @@ env:
   variables:
     IMAGE_TAG: latest
     REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
-  # Uncomment below if using Secrets Manager for sensitive info
-  # secrets-manager:
-  #   ECR_PASSWORD: ecr-secret:password
 
 phases:
   install:
     runtime-versions:
       docker: 20
     commands:
-      - echo Installing dependencies...
-      - echo Enabling Docker...
+      - echo Installing Docker and dependencies...
     finally:
       - echo Install phase completed.
 
@@ -22,23 +18,21 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - echo Authenticating Docker with $REPO_URI
+      - echo Authenticating Docker to $REPO_URI
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
       - IMAGE_URI="$REPO_URI:$IMAGE_TAG"
-      - echo "Docker image will be tagged as $IMAGE_URI"
+      - echo Docker image will be: $IMAGE_URI
 
   build:
     commands:
       - echo Building Docker image...
       - docker build -t $IMAGE_URI .
-      # Optional: tag as latest separately if needed
-      # - docker tag $IMAGE_URI $REPO_URI:latest
 
   post_build:
     commands:
       - echo Pushing image to ECR...
       - docker push $IMAGE_URI
-      - echo Image successfully pushed to $IMAGE_URI
+      - echo Image successfully pushed.
 
 artifacts:
   files:
