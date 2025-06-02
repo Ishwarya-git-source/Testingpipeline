@@ -13,6 +13,12 @@ phases:
       - echo Installing Docker and dependencies...
       - echo Logging in to Docker Hub...
       - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+    phases:
+      install:
+       commands:
+      - echo Logging in to Docker Hub...
+      - echo "Ishu@7032645740" | docker login --username "ishwarya2001" --password-stdin
+
     finally:
       - echo Install phase completed.
 
