@@ -11,7 +11,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - REPO_URI=your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo-name
+      - REPO_URI=316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
       - aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin $REPO_URI
       - IMAGE_URI=$REPO_URI:$IMAGE_TAG
 
