@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_TAG: v1
+    IMAGE_TAG: latest
     REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
 
 phases:
@@ -11,6 +11,8 @@ phases:
       docker: 20
     commands:
       - echo Installing Docker and dependencies...
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
     finally:
       - echo Install phase completed.
 
@@ -20,7 +22,7 @@ phases:
       - aws --version
       - echo Authenticating Docker to $REPO_URI
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
-      - IMAGE_URI="ishwarya2001/application:v1"
+      - IMAGE_URI="$REPO_URI:$IMAGE_TAG"
       - echo Docker image will be: $IMAGE_URI
 
   build:
