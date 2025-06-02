@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_TAG: latest
+  secrets-manager:
+    ECR_PASSWORD: ecr-secret:password  # optional if using login helper
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - REPO_URI=your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo-name
+      - aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin $REPO_URI
+      - IMAGE_URI=$REPO_URI:$IMAGE_TAG
+
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $IMAGE_URI .
+
+  post_build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push $IMAGE_URI
+      - echo Build and push complete.
+
+artifacts:
+  files:
+    - '**/*'
