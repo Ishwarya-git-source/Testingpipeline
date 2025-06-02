@@ -3,17 +3,20 @@ version: 0.2
 env:
   variables:
     IMAGE_TAG: latest
-  secrets-manager:
-    ECR_PASSWORD: ecr-secret:password  # optional if using login helper
+    REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
+  # Optional: remove secrets-manager if not using
+  # secrets-manager:
+  #   ECR_PASSWORD: ecr-secret:password
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - REPO_URI=316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
-      - aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin $REPO_URI
+      - echo Logging in to $REPO_URI
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
       - IMAGE_URI=$REPO_URI:$IMAGE_TAG
+      - echo Image URI will be: $IMAGE_URI
 
   build:
     commands:
