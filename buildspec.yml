@@ -2,8 +2,6 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      docker: 20
     commands:
       - echo Logging in to DockerHub using AWS Secrets Manager...
       - DOCKERHUB_SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/creds --query SecretString --output text)
