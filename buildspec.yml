@@ -33,10 +33,7 @@ phases:
       - echo Pushing image to ECR...
       - docker push $IMAGE_URI
       - echo Image successfully pushed.
-
-finally:
-  commands:
-    - echo Build process completed.
+      - echo Build process completed.  # Moved from 'finally'
 
 artifacts:
   files:
