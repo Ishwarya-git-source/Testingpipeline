@@ -1,50 +1,40 @@
-pipeline {
-    agent any
+version: 0.2
 
-    environment {
-        DOCKER_IMAGE = 'ishwarya2001/application'
-        DOCKER_TAG = 'v1'
-        FULL_IMAGE = 'ishwarya2001/application:v1'
-    }
+env:
+  variables:
+    IMAGE_TAG: latest
+    REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo Installing Docker and dependencies...
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
-        stage('Test') {
-            steps {
-                echo '🔍 Running Go tests...'
-                bat 'go test ./...'
-            }
-        }
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - echo Authenticating Docker to $REPO_URI
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
+      - export IMAGE_URI="$REPO_URI:$IMAGE_TAG"
+      - echo Docker image will be: $IMAGE_URI
 
-        stage('Build Docker Image') {
-            steps {
-                echo '🐳 Building Docker image...'
-                bat 'docker build -t %FULL_IMAGE% .'
-            }
-        }
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t $IMAGE_URI .
 
-        stage('Push to Docker Hub') {
-            steps {
-                echo '📦 Pushing Docker image...'
-                withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                    bat 'docker push %FULL_IMAGE%'
-                }
-            }
-        }
-    }
+  post_build:
+    commands:
+      - echo Pushing image to ECR...
+      - docker push $IMAGE_URI
+      - echo Image successfully pushed.
+      - echo Build process completed.  # Moved from 'finally'
 
-    post {
-        success {
-            echo '✅ Pipeline completed successfully.'
-        }
-        failure {
-            echo '❌ Pipeline failed.'
-        }
-    }
-}
+artifacts:
+  files:
+    - '**/*'
