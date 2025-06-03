@@ -4,7 +4,7 @@ phases:
   install:
     commands:
       - echo Logging in to DockerHub using AWS Secrets Manager...
-      - DOCKERHUB_SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/creds --query SecretString --output text)
+      - DOCKERHUB_SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/secrets --query SecretString --output text)
       - DOCKERHUB_USERNAME=$(echo "$DOCKERHUB_SECRET" | jq -r .username)
       - DOCKERHUB_PASSWORD=$(echo "$DOCKERHUB_SECRET" | jq -r .password)
       - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -12,7 +12,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 316497517854.dkr.ecr.us-east-1.amazonaws.com
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com
       - export IMAGE_TAG=latest
       - export IMAGE_URI=316497517854.dkr.ecr.ap-south-1.amazonaws.com/application:$IMAGE_TAG
 
