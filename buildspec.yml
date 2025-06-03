@@ -13,8 +13,6 @@ phases:
       - echo Installing Docker and dependencies...
       - echo Logging in to Docker Hub...
       - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-    finally:
-      - echo Install phase completed.
 
   pre_build:
     commands:
@@ -35,6 +33,10 @@ phases:
       - echo Pushing image to ECR...
       - docker push $IMAGE_URI
       - echo Image successfully pushed.
+
+finally:
+  commands:
+    - echo Install phase completed.
 
 artifacts:
   files:
