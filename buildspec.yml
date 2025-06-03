@@ -10,6 +10,7 @@ env:
 phases:
   install:
     commands:
+      - |
       - echo Logging into Docker Hub...
       - echo "DOCKERHUB_USERNAME is set to: $DOCKERHUB_USERNAME"
       - echo "DOCKERHUB_PASSWORD length: ${#DOCKERHUB_PASSWORD}"
