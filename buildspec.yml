@@ -18,7 +18,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
       - export IMAGE_URI=$REPO_URI:$IMAGE_TAG
-      - echo "Docker image URI: $IMAGE_URI"
+      - echo Docker image will be: $IMAGE_URI
 
   build:
     commands:
@@ -33,3 +33,4 @@ phases:
 artifacts:
   files:
     - '**/*'
+
