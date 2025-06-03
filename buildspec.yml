@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_TAG: latest
-    REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
+    REPO_URI: 316497517854.dkr.ecr.ap-south-1.amazonaws.com/codepipeline
 
 phases:
   install:
