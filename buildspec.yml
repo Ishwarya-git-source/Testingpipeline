@@ -11,7 +11,7 @@ phases:
   install:
     commands:
       - echo "Logging into Docker Hub..."
-      - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
