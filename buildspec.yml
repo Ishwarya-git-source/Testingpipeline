@@ -1,34 +1,33 @@
 version: 0.2
- 
-env:
-  variables:
-    IMAGE_TAG: latest
-    REPO_URI: 316497517854.dkr.ecr.ap-south-1.amazonaws.com/application
-    DOCKERHUB_USERNAME: ishwarya2001
-    DOCKERHUB_PASSWORD: Ishu@7032645740
- 
+
 phases:
   install:
+    runtime-versions:
+      docker: 20
     commands:
-      - echo "Logging into Docker Hub..."
-      - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
- 
+      - echo Logging in to DockerHub using AWS Secrets Manager...
+      - DOCKERHUB_SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/creds --query SecretString --output text)
+      - DOCKERHUB_USERNAME=$(echo "$DOCKERHUB_SECRET" | jq -r .username)
+      - DOCKERHUB_PASSWORD=$(echo "$DOCKERHUB_SECRET" | jq -r .password)
+      - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REPO_URI
-      - export IMAGE_URI=$REPO_URI:$IMAGE_TAG
- 
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 316497517854.dkr.ecr.us-east-1.amazonaws.com
+      - export IMAGE_TAG=latest
+      - export IMAGE_URI=316497517854.dkr.ecr.us-east-1.amazonaws.com/application:$IMAGE_TAG
+
   build:
     commands:
-      - echo Building Docker image...
+      - echo Building the Docker image...
       - docker build -t $IMAGE_URI .
- 
+
   post_build:
     commands:
       - echo Pushing Docker image to ECR...
       - docker push $IMAGE_URI
- 
+
 artifacts:
   files:
     - '**/*'
