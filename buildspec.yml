@@ -10,8 +10,7 @@ env:
 phases:
   install:
     commands:
-      - echo Logging into Docker Hub...
-      - echo "Username: $DOCKERHUB_USERNAME"
+      - echo Logging in to Docker Hub...
       - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
 
   pre_build:
@@ -19,6 +18,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
       - export IMAGE_URI=$REPO_URI:$IMAGE_TAG
+      - echo "Docker image URI: $IMAGE_URI"
 
   build:
     commands:
