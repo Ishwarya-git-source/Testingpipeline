@@ -20,7 +20,7 @@ phases:
       - aws --version
       - echo Authenticating Docker to $REPO_URI
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
-      - IMAGE_URI="$REPO_URI:$IMAGE_TAG"
+      - export IMAGE_URI="$REPO_URI:$IMAGE_TAG"
       - echo Docker image will be: $IMAGE_URI
 
   build:
@@ -36,7 +36,7 @@ phases:
 
 finally:
   commands:
-    - echo Install phase completed.
+    - echo Build process completed.
 
 artifacts:
   files:
