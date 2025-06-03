@@ -1,40 +1,50 @@
-version: 0.2
+pipeline {
+    agent any
 
-env:
-  variables:
-    IMAGE_TAG: latest
-    REPO_URI: 316497517854.dkr.ecr.us-east-1.amazonaws.com/Testingpipeline
+    environment {
+        DOCKER_IMAGE = 'Application'
+        DOCKER_TAG = 'V1'
+    }
 
-phases:
-  install:
-    runtime-versions:
-      docker: 20
-    commands:
-      - echo Installing Docker and dependencies...
-      - echo Logging in to Docker Hub...
-      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - echo Authenticating Docker to $REPO_URI
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
-      - export IMAGE_URI="$REPO_URI:$IMAGE_TAG"
-      - echo Docker image will be: $IMAGE_URI
+        stage('Test') {
+            steps {
+                echo '🔍 Running Go tests...'
+                bat 'go test ./...'
+            }
+        }
 
-  build:
-    commands:
-      - echo Building Docker image...
-      - docker build -t $IMAGE_URI .
+        stage('Build Docker Image') {
+            steps {
+                echo '🐳 Building Docker image...'
+                bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+            }
+        }
 
-  post_build:
-    commands:
-      - echo Pushing image to ECR...
-      - docker push $IMAGE_URI
-      - echo Image successfully pushed.
-      - echo Build process completed.  # Moved from 'finally'
+        stage('Push to Docker Hub') {
+            steps {
+                echo '📦 Pushing Docker image...'
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    bat "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
+        }
+    }
 
-artifacts:
-  files:
-    - '**/*'
+    post {
+        success {
+            echo '✅ Pipeline completed successfully.'
+        }
+        failure {
+            echo '❌ Pipeline failed.'
+        }
+    }
+}
+
