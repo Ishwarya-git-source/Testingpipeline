@@ -4,9 +4,8 @@ env:
   variables:
     IMAGE_TAG: latest
     REPO_URI: 316497517854.dkr.ecr.ap-south-1.amazonaws.com/application
-  secrets-manager:
-    DOCKERHUB_USERNAME: dockerhub/secrets:username
-    DOCKERHUB_PASSWORD: dockerhub/secrets:password
+    DOCKERHUB_USERNAME: ishwarya2001
+    DOCKERHUB_PASSWORD: Ishu@7032645740  # ⚠️ visible in logs and source, not secure
 
 phases:
   install:
